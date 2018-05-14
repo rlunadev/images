@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <input type='file' id="loadImg" />
+    <a id="download" download="image.png"><button type="button" onClick="download()">Download</button></a>
+    <img id="aaa">
+    <br />
+    <canvas id="imageDraw" width="1024" height="768" ></canvas>
+    <script>
+        function loadImage(imageString) {
+        var ctx = document.getElementById('imageDraw');
+        if (ctx.getContext) {
+            ctx = ctx.getContext('2d');
+            var image = new Image();
+            image.onload = function () {
+                var width = image.width;
+                var heigth = image.height;
+                //clear canvas image
+                canvas = document.getElementById("imageDraw");
+                ctx = canvas.getContext("2d");
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                //set image
+                if(width > 1024 && heigth > 768) {
+                    // resize canvas
+                    resizeCanvas(1024, 768);
+                    ctx.drawImage(image, 0, 0, width, heigth, 0, 0, 1024, 768);
+                } 
+                else if(width > 1024){
+                    newH = (1024 * heigth)/width;
+                    resizeCanvas(1024,newH);
+                    ctx.drawImage(image, 0, 0, width, heigth, 0, 0, 1024, newH);
+                } 
+                else if(heigth > 768){
+                    newW = (768 * width)/heigth;
+                    resizeCanvas(newW,768);
+                    ctx.drawImage(image, 0, 0, width, heigth, 0, 0,newW, 768);
+                }
+                else {
+                    // resize canvas
+                    resizeCanvas(width, heigth);
+                    ctx.drawImage(image, 0, 0, width, heigth);
+                }
+                //ctx.fillStyle = "rgba(200, 0, 0, 0.5)";
+                //ctx.fillRect(0, 0, 600, 500);
+                };
+                image.src = imageString;
+            }
+        }
+
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                loadImage( e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+            }
+        }
+        // when load image
+        $("#loadImg").change(function() {
+            readURL(this);
+        });
+        //resize image
+        function resizeCanvas(width, height) {
+            $("#imageDraw").attr("height",height).attr("width",width);
+        }
+        //download image
+        function download(){
+		var download = document.getElementById("download");
+		var image = document.getElementById("imageDraw").toDataURL("image/png")
+                    .replace("image/png", "image/octet-stream");
+			  download.setAttribute("href", image);
+	    }
+    </script>
+  </body>
+</html>      
